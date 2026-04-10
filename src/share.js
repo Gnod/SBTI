@@ -14,8 +14,7 @@ const SITE_URL = 'https://Gnod.github.io/SBTI/'
 export async function generateShareImage(primary, userLevels, dimOrder, dimDefs, mode) {
   const dpr = 2
   const W = 720
-  const H = 1400
-  // 注：画布高度固定，内容超出时底部会被截断
+  const H = 1560
   const canvas = document.createElement('canvas')
   canvas.width = W * dpr
   canvas.height = H * dpr
@@ -32,7 +31,7 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   ctx.fillStyle = '#fdfbf8'
   ctx.fill()
 
-  let y = cardY + 52
+  let y = cardY + 64
 
   // Kicker
   ctx.textAlign = 'center'
@@ -46,13 +45,13 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   ctx.font = '400 76px Georgia, "Songti SC", serif'
   ctx.fillStyle = '#b4541a'
   ctx.fillText(primary.code, W / 2, y)
-  y += 42
+  y += 48
 
   // 中文名 — serif heading
   ctx.font = '700 34px "Songti SC", "STSong", Georgia, serif'
   ctx.fillStyle = '#271e17'
   ctx.fillText(primary.cn, W / 2, y)
-  y += 38
+  y += 44
 
   // 匹配度 — divider style
   const badgeText = `匹配度 ${primary.similarity}%` + (primary.exact != null ? ` · 精准命中 ${primary.exact}/15 维` : '')
@@ -75,7 +74,7 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   ctx.lineTo(cardX + cardW - 60, y + 28)
   ctx.stroke()
 
-  y += 52
+  y += 60
 
   // Intro
   ctx.font = 'italic 600 21px "Songti SC", "STSong", Georgia, serif'
@@ -85,7 +84,7 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
     ctx.fillText(line, W / 2, y)
     y += 30
   }
-  y += 20
+  y += 36
 
   // Desc
   ctx.font = '400 18px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
@@ -97,14 +96,23 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
     y += 26
   }
   ctx.textAlign = 'center'
-  y += 20
+  y += 40
+
+  // 雷达图前分隔线
+  ctx.strokeStyle = '#e4dbd0'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(cardX + 60, y)
+  ctx.lineTo(cardX + cardW - 60, y)
+  ctx.stroke()
+  y += 40
 
   // 雷达图
   const radarCx = W / 2
-  const radarCy = y + 150
-  const radarR = 130
+  const radarCy = y + 140
+  const radarR = 120
   drawShareRadar(ctx, radarCx, radarCy, radarR, userLevels, dimOrder, dimDefs)
-  y = radarCy + radarR + 44
+  y = radarCy + radarR + 48
 
   // 二维码
   const qrSize = 100
@@ -114,7 +122,17 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   const moduleCount = qr.getModuleCount()
   const cellSize = qrSize / moduleCount
   const qrX = W / 2 - qrSize / 2
-  const qrY = y + 4
+
+  // 二维码前分隔线
+  ctx.strokeStyle = '#e4dbd0'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(cardX + 60, y)
+  ctx.lineTo(cardX + cardW - 60, y)
+  ctx.stroke()
+  y += 40
+
+  const qrY = y
 
   // 二维码白底
   const qrPad = 6
@@ -132,18 +150,17 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
     }
   }
 
-  y = qrY + qrSize + 20
+  y = qrY + qrSize + 24
 
   ctx.textAlign = 'center'
-  ctx.font = '400 16px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.font = '400 15px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
   ctx.fillStyle = '#8a7b6c'
   ctx.fillText('扫码体验 SBTI 人格测试', W / 2, y)
-  y += 24
 
   // 底部水印
-  ctx.font = '400 18px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.font = '400 16px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
   ctx.fillStyle = '#c4b8a8'
-  ctx.fillText('SBTI 人格测试 · 仅供娱乐', W / 2, H - cardY - 24)
+  ctx.fillText('SBTI 人格测试 · 仅供娱乐', W / 2, H - cardY - 28)
 
   // 下载
   const link = document.createElement('a')
