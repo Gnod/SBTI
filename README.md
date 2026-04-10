@@ -6,7 +6,7 @@
 
 ## 在线体验
 
-👉 [点击开始测试](https://pingfanfan.github.io/SBTI/)
+👉 [点击开始测试](https://Gnod.github.io/SBTI/)
 
 ## 特性
 
@@ -42,7 +42,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/pingfanfan/SBTI.git
+git clone https://github.com/Gnod/SBTI.git
 cd SBTI
 
 # 安装依赖
