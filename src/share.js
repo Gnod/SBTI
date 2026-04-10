@@ -1,9 +1,12 @@
 /**
- * 生成分享图片 — 纯 Canvas 绘制，无外部依赖
+ * 生成分享图片 — 纯 Canvas 绘制
  * Colors and typography aligned with Impeccable warm earth palette
  */
 
+import qrcode from 'qrcode-generator'
+
 const LEVEL_NUM = { L: 1, M: 2, H: 3 }
+const SITE_URL = 'https://Gnod.github.io/SBTI/'
 const LEVEL_LABEL = { L: '低', M: '中', H: '高' }
 
 /**
@@ -12,7 +15,7 @@ const LEVEL_LABEL = { L: '低', M: '中', H: '高' }
 export async function generateShareImage(primary, userLevels, dimOrder, dimDefs, mode) {
   const dpr = 2
   const W = 720
-  const H = 1280
+  const H = 1400
   const canvas = document.createElement('canvas')
   canvas.width = W * dpr
   canvas.height = H * dpr
@@ -137,8 +140,41 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
 
   y += 16
 
-  // 底部水印
+  // 二维码
+  const qrSize = 100
+  const qr = qrcode(0, 'M')
+  qr.addData(SITE_URL)
+  qr.make()
+  const moduleCount = qr.getModuleCount()
+  const cellSize = qrSize / moduleCount
+  const qrX = W / 2 - qrSize / 2
+  const qrY = y + 4
+
+  // 二维码白底
+  const qrPad = 6
+  roundRect(ctx, qrX - qrPad, qrY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2, 6)
+  ctx.fillStyle = '#ffffff'
+  ctx.fill()
+
+  // 绘制二维码模块
+  for (let row = 0; row < moduleCount; row++) {
+    for (let col = 0; col < moduleCount; col++) {
+      if (qr.isDark(row, col)) {
+        ctx.fillStyle = '#271e17'
+        ctx.fillRect(qrX + col * cellSize, qrY + row * cellSize, cellSize + 0.5, cellSize + 0.5)
+      }
+    }
+  }
+
+  y = qrY + qrSize + 20
+
   ctx.textAlign = 'center'
+  ctx.font = '400 16px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.fillStyle = '#8a7b6c'
+  ctx.fillText('扫码体验 SBTI 人格测试', W / 2, y)
+  y += 24
+
+  // 底部水印
   ctx.font = '400 18px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
   ctx.fillStyle = '#c4b8a8'
   ctx.fillText('SBTI 人格测试 · 仅供娱乐', W / 2, H - cardY - 24)
