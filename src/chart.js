@@ -1,5 +1,6 @@
 /**
  * 雷达图渲染 — Canvas API，无外部依赖
+ * Colors aligned with warm earth palette
  */
 
 const LEVEL_NUM = { L: 1, M: 2, H: 3 }
@@ -30,14 +31,18 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
 
   ctx.clearRect(0, 0, size, size)
 
-  // 背景圆环 (3层: L=1, M=2, H=3)
+  // 背景圆环 (3层: L=1, M=2, H=3) — warm tinted
   for (let level = 3; level >= 1; level--) {
     const r = (level / 3) * maxR
     ctx.beginPath()
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.fillStyle = level === 3 ? 'rgba(76, 103, 82, 0.08)' : level === 2 ? 'rgba(76, 103, 82, 0.05)' : 'rgba(76, 103, 82, 0.03)'
+    ctx.fillStyle = level === 3
+      ? 'rgba(180, 84, 26, 0.06)'
+      : level === 2
+        ? 'rgba(180, 84, 26, 0.035)'
+        : 'rgba(180, 84, 26, 0.02)'
     ctx.fill()
-    ctx.strokeStyle = 'rgba(76, 103, 82, 0.15)'
+    ctx.strokeStyle = 'rgba(180, 84, 26, 0.12)'
     ctx.lineWidth = 0.5
     ctx.stroke()
   }
@@ -56,7 +61,7 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     ctx.beginPath()
     ctx.moveTo(cx, cy)
     ctx.lineTo(x, y)
-    ctx.strokeStyle = 'rgba(76, 103, 82, 0.12)'
+    ctx.strokeStyle = 'rgba(180, 84, 26, 0.1)'
     ctx.lineWidth = 0.5
     ctx.stroke()
 
@@ -66,11 +71,11 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     const ly = cy + Math.sin(angle) * labelR
     const dim = dimOrder[i]
     const label = dimDefs[dim]?.name?.replace(/^[A-Za-z0-9]+\s*/, '') || dim
-    ctx.fillStyle = '#6b7b6e'
+    ctx.fillStyle = '#8a7b6c'
     ctx.fillText(label, lx, ly)
   }
 
-  // 数据多边形
+  // 数据多边形 — warm accent tones
   const values = dimOrder.map((dim) => LEVEL_NUM[userLevels[dim]] || 2)
 
   ctx.beginPath()
@@ -83,9 +88,9 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     else ctx.lineTo(x, y)
   }
   ctx.closePath()
-  ctx.fillStyle = 'rgba(76, 103, 82, 0.25)'
+  ctx.fillStyle = 'rgba(180, 84, 26, 0.18)'
   ctx.fill()
-  ctx.strokeStyle = 'rgba(76, 103, 82, 0.7)'
+  ctx.strokeStyle = 'rgba(180, 84, 26, 0.6)'
   ctx.lineWidth = 2
   ctx.stroke()
 
@@ -97,7 +102,7 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     const y = cy + Math.sin(angle) * r
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, Math.PI * 2)
-    ctx.fillStyle = '#4c6752'
+    ctx.fillStyle = '#b4541a'
     ctx.fill()
   }
 }
