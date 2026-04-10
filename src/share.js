@@ -7,7 +7,6 @@ import qrcode from 'qrcode-generator'
 
 const LEVEL_NUM = { L: 1, M: 2, H: 3 }
 const SITE_URL = 'https://Gnod.github.io/SBTI/'
-const LEVEL_LABEL = { L: '低', M: '中', H: '高' }
 
 /**
  * 生成分享卡片并下载
@@ -16,6 +15,7 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   const dpr = 2
   const W = 720
   const H = 1400
+  // 注：画布高度固定，内容超出时底部会被截断
   const canvas = document.createElement('canvas')
   canvas.width = W * dpr
   canvas.height = H * dpr
@@ -87,58 +87,24 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   }
   y += 20
 
+  // Desc
+  ctx.font = '400 18px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.fillStyle = '#5a4e42'
+  ctx.textAlign = 'left'
+  const descLines = wrapText(ctx, primary.desc || '', cardW - 96)
+  for (const line of descLines) {
+    ctx.fillText(line, cardX + 48, y)
+    y += 26
+  }
+  ctx.textAlign = 'center'
+  y += 20
+
   // 雷达图
   const radarCx = W / 2
   const radarCy = y + 150
   const radarR = 130
   drawShareRadar(ctx, radarCx, radarCy, radarR, userLevels, dimOrder, dimDefs)
   y = radarCy + radarR + 44
-
-  // 维度条形图
-  y += 10
-  ctx.textAlign = 'left'
-  const barX = cardX + 48
-  const barMaxW = cardW - 96
-  const dimNameW = 110
-
-  for (const dim of dimOrder) {
-    const level = userLevels[dim] || 'M'
-    const val = LEVEL_NUM[level]
-    const def = dimDefs[dim]
-    if (!def) continue
-
-    const name = def.name.replace(/^[A-Za-z0-9]+\s*/, '')
-
-    // 维度名
-    ctx.font = '600 16px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-    ctx.fillStyle = '#271e17'
-    ctx.fillText(name, barX, y)
-
-    // 进度条背景
-    const progX = barX + dimNameW
-    const progW = barMaxW - dimNameW - 50
-    const progH = 12
-    roundRect(ctx, progX, y - 10, progW, progH, 4)
-    ctx.fillStyle = '#ede6de'
-    ctx.fill()
-
-    // 进度条填充
-    const fillW = (val / 3) * progW
-    roundRect(ctx, progX, y - 10, fillW, progH, 4)
-    ctx.fillStyle = val === 3 ? '#246b47' : val === 2 ? '#b4541a' : '#a17024'
-    ctx.fill()
-
-    // 等级标签
-    ctx.textAlign = 'right'
-    ctx.font = '600 14px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-    ctx.fillStyle = val === 3 ? '#246b47' : val === 2 ? '#b4541a' : '#a17024'
-    ctx.fillText(LEVEL_LABEL[level], barX + barMaxW, y)
-    ctx.textAlign = 'left'
-
-    y += 26
-  }
-
-  y += 16
 
   // 二维码
   const qrSize = 100
